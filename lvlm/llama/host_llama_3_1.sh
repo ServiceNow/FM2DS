@@ -1,0 +1,11 @@
+CUDA_VISIBLE_DEVICES=4,5 python -u -m vllm.entrypoints.openai.api_server \
+    --host 0.0.0.0 \
+    --model meta-llama/Llama-3.1-8B \
+    --tensor-parallel-size "4" \
+    --dtype bfloat16 \
+    --served-model-name meta-llama/Llama-3.1-8B \
+    --gpu-memory-utilization "0.95" \
+    --port "8085" \
+    --enforce-eager \
+    --max-num-seqs "16" \
+    --max-model-len "8192"
