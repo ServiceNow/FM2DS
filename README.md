@@ -2,7 +2,7 @@
 
 <p align="center">
   <br>
-  <a href="#"><img alt="Paper" src="https://img.shields.io/badge/📃-Paper-808080"></a>
+  <a href="https://www.arxiv.org/abs/2412.07030"><img alt="Paper" src="https://img.shields.io/badge/📃-Paper-808080"></a>
   <a href="https://fm2ds.github.io/"><img alt="Website" src="https://img.shields.io/badge/%F0%9F%8C%90-Website-008080"></a>
 </p>
 
@@ -45,5 +45,13 @@ You can use this [link](https://github.com/ServiceNow/FM2DS/blob/main/M2QA_Bench
 ## Citation
 
 ```
-Coming Soon
+@misc{abaskohi2024fm2dsfewshotmultimodalmultihop,
+      title={FM2DS: Few-Shot Multimodal Multihop Data Synthesis with Knowledge Distillation for Question Answering}, 
+      author={Amirhossein Abaskohi and Spandana Gella and Giuseppe Carenini and Issam H. Laradji},
+      year={2024},
+      eprint={2412.07030},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2412.07030}, 
+}
 ```
