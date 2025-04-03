@@ -17,15 +17,16 @@ models trained on our synthesized data outperform those trained on human-collect
 We believe our data synthesis method will serve as a strong foundation for training and evaluating multimodal multihop question answering models.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/273fb949-214a-4c42-b3cd-c1eb058f1a82" alt="image">
+  <img src="https://github.com/user-attachments/assets/d1c8fde6-d02f-4e6b-b224-e327acab7c93" alt="image">
 </div>
+
 
 In contrast to traditional datasets that depend on human annotators, templates, and information snippets as sources, FM<sup>2</sup>DS is a fully automated approach that utilizes complete documents as its sources.
 FM<sup>2</sup>DS incorporates validation steps to ensure that the generated questions are answerable, multimodal, and multihop.
 
 
 ## FM<sup>2</sup>DS
-![image](https://github.com/user-attachments/assets/f7fe381a-241c-4716-98cb-f65e9264bf05)
+![image](https://github.com/user-attachments/assets/4c3c9afb-f4f6-43c3-8cf3-8a12fb2a1776)
 
 The Five-Stage Pipeline for FM<sup>2</sup>DS. First we retrieve relevant documents from the Wikipedia dataset to create a pool of related documents based on hyperlinks and topics (Stage 1).
 In Stage2, we select the few-shot samples from MultiModalQA (MMQA in the figure). Stage 3 focuses on generating and validating questions to make sure they are answerable, multihop, and multimodal.
@@ -36,7 +37,8 @@ We also propose a benchmark, M<sup>2</sup>QA, to assess the LVLMs performance on
 each designed to challenge the model's ability to perform a complex reasoning task. The questions are not templated into a specific structure (as in some existing works like MultimodalQA),
 instead, they are diverse and challenging. Additionally, answering the questions require access to full documents, where both information extraction and reasoning across different modalities (e.g., images and tables) are essential.
 
-![image](https://github.com/user-attachments/assets/b75a24d9-5372-45f5-8cb7-66dab532bfab)
+![image](https://github.com/user-attachments/assets/7a666536-3c5e-4f8d-b391-cee77a771476)
+
 Multimodal multihop reasoning example from M<sup>2</sup>QA-Bench where the model compares the release dates of two albums, "Music from Big Pink" and "Imagine,"
 using textual and visual cues. The documents are connected through their shared topic, "music," and the answer is determined as the title of the earlier-released album.
 
