@@ -4,6 +4,7 @@
   <br>
   <a href="https://www.arxiv.org/abs/2412.07030"><img alt="Paper" src="https://img.shields.io/badge/📃-Paper-808080"></a>
   <a href="https://fm2ds.github.io/"><img alt="Website" src="https://img.shields.io/badge/%F0%9F%8C%90-Website-008080"></a>
+  <a href="[https://fm2ds.github.io/](https://huggingface.co/datasets/AmirhosseinAbaskohi/M2QA_Bench)"><img alt="Huggingface" src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Benchmark-yellow"></a>
 </p>
 
 ## Abstract
