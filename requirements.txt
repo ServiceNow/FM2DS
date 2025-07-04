@@ -1,0 +1,35 @@
+# Core dependencies
+datasets>=2.14.0
+transformers>=4.30.0
+torch>=2.0.0
+numpy>=1.21.0
+scikit-learn>=1.0.0
+
+# Web scraping and parsing
+beautifulsoup4>=4.9.0
+requests>=2.25.0
+
+# TensorFlow (for WikiWeb2M parsing)
+tensorflow>=2.10.0
+
+# Natural Language Processing
+spacy>=3.4.0
+
+# Model APIs
+openai>=1.0.0
+anthropic>=0.7.0
+
+# Local LLM serving (optional, for Llama models)
+vllm>=0.2.0
+
+# Additional utilities
+argparse  # Built-in, but listed for completeness
+itertools  # Built-in
+collections  # Built-in
+json  # Built-in
+os  # Built-in
+
+# Development and optional dependencies
+jupyter>=1.0.0  # For notebook examples
+matplotlib>=3.5.0  # For visualization
+pillow>=8.0.0  # For image processing

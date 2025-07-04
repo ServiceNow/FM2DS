@@ -57,22 +57,101 @@ This guide provides step-by-step instructions for running the FM²DS pipeline to
 
 #### System Requirements
 - Python 3.8+
-- CUDA-compatible GPU (recommended for LVLM inference)
+- CUDA-compatible GPU (recommended for LVLM inference, especially for local Llama models)
 - Sufficient storage space for datasets (~50GB+)
+- 16GB+ RAM recommended for processing large datasets
+
+#### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ServiceNow/FM2DS.git
+   cd FM2DS
+   ```
+
+2. **Create and activate a virtual environment (recommended):**
+   ```bash
+   python -m venv fm2ds_env
+   source fm2ds_env/bin/activate  # On Windows: fm2ds_env\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Download required language model:**
+   ```bash
+   python -m spacy download en_core_web_sm
+   ```
 
 #### Dependencies
-Install the required Python packages:
+
+##### Quick Installation
+Install all required dependencies using the provided requirements file:
 
 ```bash
-pip install datasets transformers torch tensorflow beautifulsoup4 requests scikit-learn numpy
+pip install -r requirements.txt
 ```
 
-For specific model APIs:
-- **OpenAI GPT**: `pip install openai`
-- **Anthropic Claude**: `pip install anthropic`
-- **Local Llama**: `pip install vllm`
+##### Manual Installation
+Alternatively, install the core dependencies manually:
+
+```bash
+# Core ML and data processing libraries
+pip install datasets>=2.14.0 transformers>=4.30.0 torch>=2.0.0 tensorflow>=2.10.0
+pip install numpy>=1.21.0 scikit-learn>=1.0.0 beautifulsoup4>=4.9.0 requests>=2.25.0
+
+# Natural Language Processing
+pip install spacy>=3.4.0
+
+# Download spaCy language model
+python -m spacy download en_core_web_sm
+```
+
+##### Model API Dependencies
+For specific model APIs, ensure you have the appropriate packages:
+- **OpenAI GPT**: `pip install openai>=1.0.0`
+- **Anthropic Claude**: `pip install anthropic>=0.7.0`
+- **Local Llama**: `pip install vllm>=0.2.0` (requires CUDA-compatible GPU)
+
+##### Optional Dependencies
+For development and enhanced functionality:
+```bash
+pip install jupyter>=1.0.0 matplotlib>=3.5.0 pillow>=8.0.0
+```
+
+#### Troubleshooting Installation
+
+**Common Issues:**
+
+1. **PyTorch CUDA compatibility**: If you have a CUDA-compatible GPU, install PyTorch with CUDA support:
+   ```bash
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+   ```
+
+2. **TensorFlow GPU support**: For GPU acceleration with TensorFlow:
+   ```bash
+   pip install tensorflow[and-cuda]
+   ```
+
+3. **vLLM installation issues**: vLLM requires specific CUDA versions. Check the [vLLM installation guide](https://docs.vllm.ai/en/latest/getting_started/installation.html) for your system.
+
+4. **Memory issues**: If you encounter out-of-memory errors during dataset processing, consider:
+   - Reducing batch sizes in the configuration
+   - Using a machine with more RAM
+   - Processing smaller subsets of the data initially
 
 ### Setup and Data Preparation
+
+#### Step 0: Install Dependencies and Download Models
+
+Install all dependencies and download the required spaCy language model:
+
+```bash
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+```
 
 #### Step 1: Download Required Datasets
 
