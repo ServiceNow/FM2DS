@@ -45,6 +45,286 @@ using textual and visual cues. The documents are connected through their shared 
 
 You can use this [link](https://github.com/ServiceNow/FM2DS/blob/main/M2QA_Bench.json) to access this benchmark.
 
+## How to Run
+
+This guide provides step-by-step instructions for running the FM²DS pipeline to synthesize multimodal multihop question answering data.
+
+### Overview
+
+**Important Note**: This project is designed specifically for **data synthesis**. The generated dataset can be used to train various multimodal models, but the actual model training is not included in this repository. For model training, please refer to each model's specific training approaches and documentation.
+
+### Prerequisites
+
+#### System Requirements
+- Python 3.8+
+- CUDA-compatible GPU (recommended for LVLM inference)
+- Sufficient storage space for datasets (~50GB+)
+
+#### Dependencies
+Install the required Python packages:
+
+```bash
+pip install datasets transformers torch tensorflow beautifulsoup4 requests scikit-learn numpy
+```
+
+For specific model APIs:
+- **OpenAI GPT**: `pip install openai`
+- **Anthropic Claude**: `pip install anthropic`
+- **Local Llama**: `pip install vllm`
+
+### Setup and Data Preparation
+
+#### Step 1: Download Required Datasets
+
+##### 1.1 Download WikiWeb2M Dataset
+```bash
+cd data/
+bash download_wikiweb2m.sh
+```
+
+##### 1.2 Download MultiModalQA Training Data
+```bash
+cd create_few_shot_samples/
+bash download_mmqa_train.sh
+```
+
+#### Step 2: Parse and Prepare Base Dataset
+
+```bash
+# Parse WikiWeb2M dataset and save as HuggingFace format
+python data/parse_and_save_dataset.py
+```
+
+#### Step 3: Create Few-Shot Examples
+
+```bash
+# Create few-shot examples from MultiModalQA
+python create_few_shot_samples/create_few_shot_from_multimodalqa.py
+```
+
+#### Step 4: Create Document Pool
+
+```bash
+# Create pools of related documents for multihop reasoning
+python data/create_document_pool.py
+```
+
+### Running Data Synthesis
+
+#### Configure Model Settings
+
+Choose one of the following language models:
+
+##### Option 1: OpenAI GPT (Recommended)
+Set your OpenAI API key:
+```bash
+export OPENAI_API_KEY="your-api-key-here"
+```
+
+##### Option 2: Anthropic Claude
+Set your Anthropic API key:
+```bash
+export ANTHROPIC_API_KEY="your-api-key-here"
+```
+
+##### Option 3: Local Llama Model
+Start the Llama server:
+```bash
+# For Llama 3.1
+bash lvlm/llama/host_llama_3_1.sh
+
+# For Llama 3.2
+bash lvlm/llama/host_llama_3_2.sh
+```
+
+#### Generate Synthetic Dataset
+
+Run the main data synthesis pipeline:
+
+```bash
+python src/create_dataset.py \
+    --model gpt \
+    --num-few-shot 1 \
+    --num-examples 5000 \
+    --output-dataset FM2DS/data/generated_data/synth
+```
+
+**Parameters:**
+- `--model`: Choose from `gpt`, `claude`, or `llama`
+- `--num-few-shot`: Number of few-shot examples (default: 1)
+- `--num-examples`: Total number of examples to generate (default: 5000)
+- `--output-dataset`: Output directory for generated dataset
+
+### Generated Data Format
+
+The synthesized dataset contains the following structure:
+
+```json
+{
+    "question": "Which country is ranked lower in EuroCup Basketball Performance...",
+    "answer": "France",
+    "documents": [
+        {
+            "title": "Document Title",
+            "content": [
+                {"type": "text", "value": "Text content here..."},
+                {"type": "image", "value": "http://example.com/image.jpg"}
+            ]
+        }
+    ],
+    "query": ["step-by-step reasoning process", "explanation of answer derivation"]
+}
+```
+
+### Using the Data for Model Training
+
+#### Important Training Considerations
+
+**⚠️ Critical for Model Training**: When training multimodal models with this data, include **both the question-answer pairs AND the generated queries**. The queries contain step-by-step reasoning that is essential for teaching models multihop reasoning capabilities.
+
+#### Data Conversion Scripts
+
+Below are example Python scripts to convert the FM²DS data format for specific model training:
+
+##### Example: Converting for InternVL2 Training
+
+```python
+# convert_for_internvl2.py
+import json
+from datasets import load_from_disk
+
+def convert_fm2ds_to_internvl2(input_dataset_path, output_file):
+    """
+    Convert FM2DS dataset to InternVL2 training format
+    """
+    dataset = load_from_disk(input_dataset_path)
+    converted_data = []
+    
+    for example in dataset:
+        # Extract images from documents
+        images = []
+        text_content = ""
+        
+        for doc in example['documents']:
+            for content in doc['content']:
+                if content['type'] == 'image':
+                    images.append(content['value'])
+                elif content['type'] == 'text':
+                    text_content += content['value'] + " "
+        
+        # Create InternVL2 format with question, answer, and reasoning
+        reasoning_steps = " ".join(example['query']) if isinstance(example['query'], list) else example['query']
+        
+        internvl_example = {
+            "id": f"fm2ds_{len(converted_data)}",
+            "image": images[0] if images else None,  # InternVL2 typically uses single image
+            "conversations": [
+                {
+                    "from": "human",
+                    "value": f"Context: {text_content.strip()}\n\nQuestion: {example['question']}\n\nPlease provide step-by-step reasoning and then the final answer."
+                },
+                {
+                    "from": "gpt", 
+                    "value": f"Reasoning: {reasoning_steps}\n\nAnswer: {example['answer']}"
+                }
+            ]
+        }
+        converted_data.append(internvl_example)
+    
+    # Save in JSONL format
+    with open(output_file, 'w') as f:
+        for item in converted_data:
+            f.write(json.dumps(item) + '\n')
+    
+    print(f"Converted {len(converted_data)} examples to {output_file}")
+
+# Usage
+convert_fm2ds_to_internvl2("FM2DS/data/generated_data/synth", "internvl2_training_data.jsonl")
+```
+
+##### Example: Converting for Generic VLM Training
+
+```python
+# convert_for_generic_vlm.py
+import json
+from datasets import load_from_disk
+
+def convert_fm2ds_to_generic_vlm(input_dataset_path, output_file):
+    """
+    Convert FM2DS dataset to generic VLM training format
+    """
+    dataset = load_from_disk(input_dataset_path)
+    converted_data = []
+    
+    for example in dataset:
+        # Prepare multimodal input
+        multimodal_input = {
+            "text_documents": [],
+            "images": [],
+            "question": example['question'],
+            "reasoning_steps": example['query'],
+            "answer": example['answer']
+        }
+        
+        for doc in example['documents']:
+            text_parts = []
+            for content in doc['content']:
+                if content['type'] == 'text':
+                    text_parts.append(content['value'])
+                elif content['type'] == 'image':
+                    multimodal_input['images'].append({
+                        "url": content['value'],
+                        "caption": ""  # Add caption if available
+                    })
+            
+            if text_parts:
+                multimodal_input['text_documents'].append({
+                    "title": doc['title'],
+                    "content": " ".join(text_parts)
+                })
+        
+        converted_data.append(multimodal_input)
+    
+    with open(output_file, 'w') as f:
+        json.dump(converted_data, f, indent=2)
+    
+    print(f"Converted {len(converted_data)} examples to {output_file}")
+
+# Usage
+convert_fm2ds_to_generic_vlm("FM2DS/data/generated_data/synth", "generic_vlm_training_data.json")
+```
+
+### Training Recommendations
+
+1. **Include Reasoning Steps**: Always incorporate the generated queries/reasoning steps in your training data
+2. **Multimodal Alignment**: Ensure your model can process both text and images from the documents
+3. **Multihop Training**: Structure training to encourage step-by-step reasoning across multiple documents
+4. **Validation**: Use the provided M²QA-Bench (`M2QA_Bench.json`) for evaluation
+
+### Evaluation
+
+Use the M²QA-Bench for evaluating trained models:
+
+```python
+import json
+
+# Load benchmark
+with open('M2QA_Bench.json', 'r') as f:
+    benchmark = json.load(f)
+
+# Each item contains:
+# - question: The question to answer
+# - answer: Ground truth answer  
+# - modalities: Required modalities (text, image, table)
+# - pages: Source Wikipedia pages
+```
+
+#### Performance Tips
+
+- Use `--num-few-shot 3` for better generation quality
+- Start with smaller `--num-examples` for testing
+- Monitor validation success rates in the generation logs
+
 ## Citation
 
 ```
