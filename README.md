@@ -407,13 +407,12 @@ with open('M2QA_Bench.json', 'r') as f:
 ## Citation
 
 ```
-@misc{abaskohi2024fm2dsfewshotmultimodalmultihop,
-      title={FM2DS: Few-Shot Multimodal Multihop Data Synthesis with Knowledge Distillation for Question Answering}, 
-      author={Amirhossein Abaskohi and Spandana Gella and Giuseppe Carenini and Issam H. Laradji},
-      year={2024},
-      eprint={2412.07030},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2412.07030}, 
+@inproceedings{
+  abaskohi2025fmds,
+  title={{FM}2{DS}: Few-Shot Multimodal Multihop Data Synthesis with Knowledge Distillation for Question Answering},
+  author={Amirhossein Abaskohi and Spandana Gella and Giuseppe Carenini and Issam H. Laradji},
+  booktitle={The 2025 Conference on Empirical Methods in Natural Language Processing},
+  year={2025},
+  url={https://openreview.net/forum?id=esIjdsJQtC}
 }
 ```
